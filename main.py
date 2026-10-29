@@ -1,10 +1,8 @@
 import streamlit as st
 import pandas as pd
 from pathlib import Path
-from PIL import Image
 import streamlit.components.v1 as components
 import base64
-import html
 import json
 
 # ==================================================
@@ -28,18 +26,15 @@ BASE_DIR = Path(__file__).resolve().parent
 st.markdown("""
 <style>
 
-/* 전체 배경 */
 .stApp {
     background-color: #F8FAF8;
     color: #111111;
 }
 
-/* 제목 */
 h1, h2, h3, h4 {
     color: #263D35 !important;
 }
 
-/* 메인 제목 */
 .main-title {
     font-size: 46px;
     font-weight: 800;
@@ -47,28 +42,24 @@ h1, h2, h3, h4 {
     letter-spacing: -1px;
 }
 
-/* 영어 부제목 */
 .subtitle {
     color: #52645A !important;
     margin-bottom: 24px;
     font-size: 15px;
 }
 
-/* 소개 박스 */
 .info-box {
     background-color: #EAF1EC;
     padding: 22px;
     border-radius: 16px;
     color: #111111 !important;
     line-height: 1.8;
-    font-size: 15px;
 }
 
 .info-box * {
     color: #111111 !important;
 }
 
-/* 통계 카드 */
 [data-testid="stMetric"] {
     background-color: white;
     padding: 18px;
@@ -83,12 +74,10 @@ h1, h2, h3, h4 {
     opacity: 1 !important;
 }
 
-/* 본문 */
 [data-testid="stMainBlockContainer"] p {
     color: #111111;
 }
 
-/* 사이드바 */
 [data-testid="stSidebar"] {
     background-color: #252831;
 }
@@ -97,47 +86,34 @@ h1, h2, h3, h4 {
     color: white !important;
 }
 
-/* 선택 박스 */
 [data-baseweb="select"] * {
     color: #111111 !important;
 }
 
-/* 이미지 */
 [data-testid="stImage"] img {
     border-radius: 12px;
 }
 
-/* 색상 범례 */
 .legend-box {
     background: white;
     border: 1px solid #E2EAE4;
     padding: 18px;
     border-radius: 14px;
-    margin-bottom: 15px;
     line-height: 2;
     color: #111111;
 }
 
-.legend-box * {
-    color: #111111 !important;
-}
-
-/* 기준 설명 박스 */
 .criteria-box {
     background-color: #F0F4F1;
     border-left: 5px solid #718D7B;
     padding: 20px;
     border-radius: 10px;
     line-height: 1.9;
-    color: #111111 !important;
+    color: #111111;
 }
 
-.criteria-box * {
-    color: #111111 !important;
-}
-
-/* 모바일 */
 @media (max-width: 768px) {
+
     .main-title {
         font-size: 36px;
     }
@@ -173,7 +149,6 @@ try:
     df = load_data()
 
 except Exception as e:
-
     st.error("data.csv 파일을 불러올 수 없습니다.")
     st.exception(e)
     st.stop()
@@ -217,16 +192,14 @@ sample_images = {
 
 def find_school_map():
 
-    possible_names = [
+    for name in [
         "school_map.png",
         "school_map.PNG",
         "school_map.jpg",
         "school_map.JPG",
         "school_map.jpeg",
         "school_map.JPEG"
-    ]
-
-    for name in possible_names:
+    ]:
 
         path = BASE_DIR / name
 
@@ -255,13 +228,8 @@ def show_image(relative_path):
 
 
 # ==================================================
-# 5. 색상 분류 기준
+# 5. 색상 분류
 # ==================================================
-
-# 주의:
-# 아래 기준은 이번 탐구의 시각화를 위한
-# 자체적인 집락 수 분류 기준입니다.
-# 인체 유해성이나 감염 위험도를 나타내지 않습니다.
 
 def get_colony_category(location):
 
@@ -274,7 +242,6 @@ def get_colony_category(location):
         selected.iloc[0]["집락수"]
     ).replace(" ", "")
 
-    # 계수가 불가능한 경우
     if (
         "계수어려움" in count_text
         or "계수불가" in count_text
@@ -282,7 +249,6 @@ def get_colony_category(location):
     ):
         return "unknown"
 
-    # 현재 CSV에 기록된 대략적인 범위
     if "20~30" in count_text:
         return "high"
 
@@ -340,17 +306,17 @@ def show_color_criteria():
     🔴 <b>빨강 — 집락 수 많음</b><br>
     약 20개 이상 관찰된 경우
 
-    <br>
+    <br><br>
 
     🟡 <b>노랑 — 집락 수 중간</b><br>
     약 10~19개 관찰된 경우
 
-    <br>
+    <br><br>
 
     🟢 <b>초록 — 집락 수 적음</b><br>
     약 9개 이하 관찰된 경우
 
-    <br>
+    <br><br>
 
     ⚪ <b>회색 — 계수 어려움</b><br>
     집락이 겹치거나 넓게 퍼져
@@ -362,7 +328,9 @@ def show_color_criteria():
     st.markdown("""
     <div class="criteria-box">
 
-    <b>🔬 색상 분류의 과학적 기준</b><br><br>
+    <b>🔬 색상 분류의 과학적 기준</b>
+
+    <br><br>
 
     본 지도는 배지에서 관찰된
     <b>미생물 집락 수</b>를 기준으로
@@ -371,26 +339,26 @@ def show_color_criteria():
     <br><br>
 
     빨강·노랑·초록의 경계값은
-    이번 탐구의 결과를 비교하기 위해
-    설정한 <b>프로젝트 자체 분류 기준</b>이며,
+    이번 탐구 결과를 비교하기 위해 설정한
+    <b>프로젝트 자체 분류 기준</b>이며,
     공식적인 미생물 안전 기준은 아닙니다.
 
     <br><br>
 
-    <b>⚠️ 색상은 인체 유해성이나 감염 위험도를
-    의미하지 않습니다.</b>
+    <b>⚠️ 색상은 인체 유해성이나
+    감염 위험도를 의미하지 않습니다.</b>
 
     <br><br>
 
-    집락 수가 많더라도
-    반드시 병원성 미생물이 많다는 뜻은 아니며,
+    집락 수가 많더라도 반드시
+    병원성 미생물이 많다는 뜻은 아니며,
     집락 수가 적다고 해서
-    해당 장소가 안전하다고 단정할 수도 없습니다.
+    안전한 장소라고 단정할 수도 없습니다.
 
     <br><br>
 
-    또한 시료 채취 면적, 채취 방법,
-    배양 조건 등에 따라 집락 수가 달라질 수 있으므로
+    시료 채취 면적과 배양 조건 등에 따라
+    집락 수가 달라질 수 있으므로
     장소 간 차이를 해석할 때 주의가 필요합니다.
 
     </div>
@@ -398,31 +366,29 @@ def show_color_criteria():
 
 
 # ==================================================
-# 7. 조사 장소별 결과
+# 7. 장소별 상세 결과
 # ==================================================
 
 def show_location_result(location):
 
-    selected = df[
-        df["조사장소"] == location
-    ]
+    selected = df[df["조사장소"] == location]
 
     if selected.empty:
-        st.warning("해당 장소의 데이터가 없습니다.")
+        st.warning("관찰 데이터가 없습니다.")
         return
 
     row = selected.iloc[0]
 
     category = get_colony_category(location)
 
-    category_info = CATEGORY_INFO[category]
+    info = CATEGORY_INFO[category]
 
     st.subheader(
-        f"{category_info['symbol']} {location}"
+        f"{info['symbol']} {location}"
     )
 
     st.caption(
-        f"집락 수 분류: {category_info['label']} "
+        f"집락 수 분류: {info['label']} "
         "| 인체 유해성 판정 아님"
     )
 
@@ -441,29 +407,18 @@ def show_location_result(location):
 
         st.caption(
             "하나의 배지를 여러 조사 구역으로 "
-            "나누어 사용했습니다. 사진에서 "
-            "해당 구역을 확인해 주세요."
+            "나누어 사용했습니다. "
+            "사진에서 해당 구역을 확인해 주세요."
         )
 
     with col2:
 
         st.markdown("#### 🔬 관찰 결과")
 
-        st.write(
-            f"**배지 번호:** {row['배지번호']}"
-        )
-
-        st.write(
-            f"**관찰된 집락 수:** {row['집락수']}"
-        )
-
-        st.write(
-            f"**주요 색깔:** {row['주요색깔']}"
-        )
-
-        st.write(
-            f"**형태적 특징:** {row['관찰특징']}"
-        )
+        st.write(f"**배지 번호:** {row['배지번호']}")
+        st.write(f"**집락 수:** {row['집락수']}")
+        st.write(f"**주요 색깔:** {row['주요색깔']}")
+        st.write(f"**관찰 특징:** {row['관찰특징']}")
 
         st.divider()
 
@@ -472,9 +427,9 @@ def show_location_result(location):
         st.write(row["동정후보"])
 
         st.info(
-            "위 미생물 이름은 집락의 형태를 바탕으로 "
-            "고려한 후보입니다. "
-            "실제 동정이 확인된 것은 아닙니다."
+            "동정 후보는 집락 외형을 바탕으로 "
+            "고려한 것으로, 실제 미생물의 "
+            "종이 확인된 것은 아닙니다."
         )
 
 
@@ -482,12 +437,8 @@ def show_location_result(location):
 # 8. 지도 마커 위치
 # ==================================================
 
-# 좌표는 이미지 너비/높이에 대한 백분율입니다.
-# 사용자가 제공한 평면도를 기준으로 한
-# 대략적인 초기 위치입니다.
-#
-# 정확한 채취 지점이 확인되지 않은 장소는
-# 임의로 표시하지 않습니다.
+# 평면도 이미지에 대한 백분율 좌표
+# 정확한 채취 지점이 아닌 대략적인 초기 위치
 
 MAP_POSITIONS = {
 
@@ -511,7 +462,7 @@ MAP_POSITIONS = {
 
 
 # ==================================================
-# 9. 지도 이미지 인코딩
+# 9. 이미지를 HTML에서 표시할 수 있도록 변환
 # ==================================================
 
 @st.cache_data
@@ -534,7 +485,7 @@ def encode_image(path_string):
 
 
 # ==================================================
-# 10. 클릭 가능한 지도
+# 10. 클릭 가능한 지도 + 배지 사진
 # ==================================================
 
 def show_interactive_map():
@@ -542,22 +493,16 @@ def show_interactive_map():
     map_path = find_school_map()
 
     if map_path is None:
-
-        st.warning(
-            "학교 평면도 파일을 찾을 수 없습니다."
-        )
-
+        st.warning("학교 평면도 파일을 찾을 수 없습니다.")
         return
 
-    image_data = encode_image(str(map_path))
+    map_image_data = encode_image(str(map_path))
 
     marker_data = []
 
     for location, position in MAP_POSITIONS.items():
 
-        selected = df[
-            df["조사장소"] == location
-        ]
+        selected = df[df["조사장소"] == location]
 
         if selected.empty:
             continue
@@ -568,6 +513,22 @@ def show_interactive_map():
 
         info = CATEGORY_INFO[category]
 
+        sample = str(row["배지번호"])
+
+        sample_path = sample_images.get(sample)
+
+        sample_image_data = ""
+
+        if sample_path:
+
+            full_path = BASE_DIR / sample_path
+
+            if full_path.exists():
+
+                sample_image_data = encode_image(
+                    str(full_path)
+                )
+
         marker_data.append({
             "location": location,
             "x": position[0],
@@ -575,6 +536,9 @@ def show_interactive_map():
             "color": info["color"],
             "category": info["label"],
             "count": str(row["집락수"]),
+            "sample": sample,
+            "sample_image": sample_image_data,
+            "main_color": str(row["주요색깔"]),
             "features": str(row["관찰특징"]),
             "candidates": str(row["동정후보"])
         })
@@ -591,7 +555,7 @@ def show_interactive_map():
 
             <img
                 class="floor-map"
-                src="__IMAGE_DATA__"
+                src="__MAP_IMAGE__"
                 alt="학교 1층 평면도"
             >
 
@@ -600,7 +564,8 @@ def show_interactive_map():
         </div>
 
         <div class="map-help">
-            ● 색깔 원을 누르면 관찰 결과가 나타납니다.
+            ● 색깔 원을 누르면 해당 장소의
+            실제 배지 사진과 관찰 결과가 나타납니다.
             <br>
             ● 마커 위치는 평면도를 기준으로 한
             대략적인 위치입니다.
@@ -614,7 +579,8 @@ def show_interactive_map():
 
             <div class="result-body">
                 지도 위의 색깔 원을 누르면
-                해당 장소의 관찰 정보를 확인할 수 있습니다.
+                해당 장소의 배지 사진과
+                미생물 관찰 결과를 확인할 수 있습니다.
             </div>
 
         </div>
@@ -698,10 +664,10 @@ def show_interactive_map():
     }
 
     .result-title {
-        font-size: 19px;
+        font-size: 20px;
         font-weight: 750;
         color: #263D35;
-        margin-bottom: 12px;
+        margin-bottom: 15px;
     }
 
     .result-body {
@@ -712,7 +678,7 @@ def show_interactive_map():
     }
 
     .result-row {
-        margin-bottom: 7px;
+        margin-bottom: 8px;
     }
 
     .result-label {
@@ -720,13 +686,37 @@ def show_interactive_map():
         color: #263D35;
     }
 
+    .sample-photo {
+        display: block;
+        width: 100%;
+        max-width: 650px;
+        height: auto;
+        border-radius: 12px;
+        margin-top: 12px;
+        border: 1px solid #E0E7E1;
+    }
+
+    .photo-title {
+        margin-top: 18px;
+        font-size: 16px;
+        font-weight: 700;
+        color: #263D35;
+    }
+
+    .photo-caption {
+        font-size: 12px;
+        color: #52645A;
+        line-height: 1.7;
+        margin-top: 8px;
+    }
+
     .caution {
         background: #F0F4F1;
         border-radius: 8px;
-        padding: 10px;
-        margin-top: 12px;
+        padding: 12px;
+        margin-top: 15px;
         font-size: 12px;
-        line-height: 1.7;
+        line-height: 1.8;
     }
 
     @media (max-width: 500px) {
@@ -779,6 +769,41 @@ def show_interactive_map():
 
         button.classList.add("active");
 
+        let photoHtml = "";
+
+        if (marker.sample_image) {
+
+            photoHtml = `
+                <div class="photo-title">
+                    🧫 실제 배지 사진
+                </div>
+
+                <img
+                    class="sample-photo"
+                    src="${marker.sample_image}"
+                    alt="${escapeHtml(marker.location)}가 포함된 배지 사진"
+                >
+
+                <div class="photo-caption">
+                    배지 번호: ${escapeHtml(marker.sample)}
+                    <br>
+                    하나의 배지를 여러 조사 구역으로
+                    나누어 사용했습니다.
+                    사진에서 해당 장소의 구역을
+                    확인해 주세요.
+                </div>
+            `;
+
+        } else {
+
+            photoHtml = `
+                <div class="photo-caption">
+                    연결된 배지 사진을 찾을 수 없습니다.
+                </div>
+            `;
+
+        }
+
         resultCard.innerHTML = `
             <div class="result-title">
                 📍 ${escapeHtml(marker.location)}
@@ -802,6 +827,13 @@ def show_interactive_map():
 
                 <div class="result-row">
                     <span class="result-label">
+                        주요 색깔:
+                    </span>
+                    ${escapeHtml(marker.main_color)}
+                </div>
+
+                <div class="result-row">
+                    <span class="result-label">
                         관찰 특징:
                     </span>
                     ${escapeHtml(marker.features)}
@@ -814,15 +846,22 @@ def show_interactive_map():
                     ${escapeHtml(marker.candidates)}
                 </div>
 
+                ${photoHtml}
+
                 <div class="caution">
-                    이 색상은 집락 수에 따른 분류이며
-                    인체 유해성이나 감염 위험도를
-                    의미하지 않습니다.
+                    ⚠️ 이 색상은 관찰된 집락 수에 따른
+                    분류이며 인체 유해성이나
+                    감염 위험도를 의미하지 않습니다.
                     동정 후보도 확정된 결과가 아닙니다.
                 </div>
 
             </div>
         `;
+
+        resultCard.scrollIntoView({
+            behavior: "smooth",
+            block: "nearest"
+        });
 
     }
 
@@ -858,8 +897,8 @@ def show_interactive_map():
     """
 
     map_html = map_html.replace(
-        "__IMAGE_DATA__",
-        image_data
+        "__MAP_IMAGE__",
+        map_image_data
     )
 
     map_html = map_html.replace(
@@ -869,7 +908,7 @@ def show_interactive_map():
 
     components.html(
         map_html,
-        height=1050,
+        height=1350,
         scrolling=True
     )
 
@@ -951,7 +990,8 @@ if menu == "🗺️ 학교 위생 지도":
 
     st.caption(
         "평면도 위 색깔 마커를 누르면 "
-        "해당 장소의 관찰 결과를 확인할 수 있습니다."
+        "해당 장소의 실제 배지 사진과 "
+        "관찰 결과를 확인할 수 있습니다."
     )
 
     show_interactive_map()
@@ -1087,7 +1127,7 @@ elif menu == "📊 데이터 분석":
     )
 
     st.caption(
-        "위 그래프는 각 집락 수 분류에 해당하는 "
+        "이 그래프는 집락 수 분류별 "
         "조사 장소의 개수를 나타냅니다."
     )
 
@@ -1096,9 +1136,7 @@ elif menu == "📊 데이터 분석":
     st.subheader("📋 조사 장소별 집락 수")
 
     st.dataframe(
-        df[
-            ["조사장소", "집락수"]
-        ],
+        df[["조사장소", "집락수"]],
         use_container_width=True,
         hide_index=True
     )
@@ -1106,9 +1144,8 @@ elif menu == "📊 데이터 분석":
     st.warning(
         "일부 장소는 집락이 겹치거나 넓게 퍼져 "
         "정확한 계수가 어렵습니다. "
-        "따라서 모든 장소의 집락 수를 "
-        "동일한 조건에서 측정한 정량적 결과로 "
-        "해석해서는 안 됩니다."
+        "장소별 집락 수를 동일한 조건에서 측정한 "
+        "정량적 결과로 해석해서는 안 됩니다."
     )
 
     st.divider()
@@ -1123,11 +1160,6 @@ elif menu == "📊 데이터 분석":
 
     st.bar_chart(
         counts.set_index("배지번호")
-    )
-
-    st.caption(
-        "이 그래프는 집락 수가 아니라 "
-        "각 배지에 포함된 조사 장소 수를 나타냅니다."
     )
 
 
@@ -1163,14 +1195,9 @@ elif menu == "📋 프로젝트 소개":
     ]
 
     for i, step in enumerate(steps, 1):
-
-        st.write(
-            f"{i}. {step}"
-        )
+        st.write(f"{i}. {step}")
 
     st.divider()
-
-    st.subheader("🎨 지도 색상 분류 기준")
 
     show_color_criteria()
 
@@ -1179,25 +1206,22 @@ elif menu == "📋 프로젝트 소개":
     st.subheader("📌 연구의 한계")
 
     st.write(
-        "미생물 집락의 색깔과 형태는 "
-        "동정 후보를 추정하는 데 참고할 수 있지만, "
-        "이러한 특징만으로 미생물의 종을 "
-        "확정할 수는 없습니다."
+        "집락의 색깔과 형태만으로 미생물의 "
+        "종이나 병원성을 확인할 수 없습니다."
     )
 
     st.write(
-        "또한 관찰된 집락 수는 시료 채취 방법, "
-        "채취 면적, 배양 조건 등의 영향을 받으므로 "
-        "실제 환경의 미생물 총량을 "
-        "정확하게 나타내지 않을 수 있습니다."
+        "또한 집락 수는 채취 면적, 채취 방법, "
+        "배양 조건 등에 따라 달라질 수 있으므로 "
+        "실제 환경의 미생물 총량을 정확하게 "
+        "나타내지 않을 수 있습니다."
     )
 
     st.write(
-        "따라서 본 프로젝트에서 사용하는 "
-        "빨강·노랑·초록색 분류는 "
-        "집락 수를 시각적으로 구분하기 위한 "
-        "것이며, 인체 유해성이나 "
-        "감염 위험도를 평가하는 지표가 아닙니다."
+        "따라서 지도에서 사용하는 색상은 "
+        "관찰된 집락 수를 구분하기 위한 것이며 "
+        "인체 유해성이나 감염 위험도를 "
+        "나타내는 지표가 아닙니다."
     )
 
 
